@@ -50,6 +50,8 @@ class LinkedList {
    * - Think about adding to the 'end' of the LinkedList (Hint: tail)
    */
   addStudent(newStudent) {
+    const newNode = new Node(newStudent) // wraps student inside the node ~ new student
+
     if (!this.head) {
       this.head = newNode;
       this.tail = newNode;
@@ -69,7 +71,7 @@ class LinkedList {
    * - Think about how removal might update head or tail
    */
   removeStudent(email) {
-   if (!this.head) return;
+   if (!this.head) return false;
 
    if (this.head.data.getEmail() === email) {
     this.head = this.head.next;
@@ -85,10 +87,12 @@ class LinkedList {
    
    if (current.next) {
     current.next = current.next.next;
+    
     if (!current.next) this.tail = current;
     this.length--;
+    return true;
    }
-
+return false;
   }
 
   /**
@@ -147,7 +151,7 @@ class LinkedList {
       current = current.next;
     }
     students.sort((a, b) => a.getName().localeCompare(b.getName()));
-    return [];
+    return students;
   }
 
   /**
@@ -181,19 +185,22 @@ class LinkedList {
    * RETURNS:   None
    */
   async saveToJson(fileName) {
+    const fs = require('fs/promises');
     let current = this.head;
     const studentArray = [];
+    
     while (current) {
       const student = current.data;
       studentArray.push({
         name: student.getName(),
         year: student.getYear(),
         email: student.getEmail(),
-        specialization: student.getSpecialization();
+        specialization: student.getSpecialization()
       });
       current = current.next;
     }
-    await fs.writeFile(fileName, JSON.stringify(studentArray, null, 2)); // save
+
+    await fs.writeFile(fileName, JSON.stringify(studentArray, null, 2)); 
   }
 
   /**
@@ -204,15 +211,24 @@ class LinkedList {
    *  - Use clearStudents() to perform overwriting
    */
   async loadFromJSON(fileName) {
+    const fs = require('fs/promises');
     const data = await fs.readFile(fileName, 'utf-8');
-    const parsed = JSON.parse(data);
-    this.#clearStudents(); // start fresh
-    for (const item of parsed) {
-      const student = new Student(item.name, item.year, item.email, item.specialization);
+    const studentArray = JSON.parse(data);
+
+    this.#clearStudents();
+
+    for (let i = 0; i < studentArray.length; i++) {
+      const studentData = studentArray[i];
+      
+      const student = new Student(
+        studentData.name,
+        studentData.year,
+        studentData.email,
+        studentData.specialization
+      );
+    
       this.addStudent(student); // add each student
     }
-  }
-
 }
-
+}
 module.exports = { LinkedList }

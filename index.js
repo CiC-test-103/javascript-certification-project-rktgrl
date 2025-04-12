@@ -1,4 +1,5 @@
 // Necessary Imports, DO NOT REMOVE
+const { link } = require("fs");
 const { LinkedList } = require("./LinkedList");
 const { Student } = require('./Student')
 const readline = require('readline');
@@ -47,7 +48,16 @@ async function handleCommand(command) {
         console.log('Adding student...')
         const [name, year, email, specialization] = args
         // --------> WRITE YOUR CODE BELOW
-
+        const existingStudent = studentManagementSystem.findStudent(email);
+        if (existingStudent !== -1) {
+          console.log(`Student information found: ${existingStudent.getString()}`);
+          return;
+        } else {
+          const newStudent = new Student(name, parseInt(year), email, specialization);
+        
+          studentManagementSystem.addStudent(newStudent);
+          studentManagementSystem.displayStudents();
+        }
         // --------> WRITE YOUR CODE ABOVE
         break;
 
@@ -62,7 +72,16 @@ async function handleCommand(command) {
        */
       console.log('Removing student...')
       // --------> WRITE YOUR CODE BELOW
-      
+      const [removeEmail] = args;
+      const removed = studentManagementSystem.removeStudent(removeEmail);
+
+      if (removed) {
+        console.log(`Student with email ${removeEmail} has been removed.`);
+      } else {
+        console.log(`No student found with email: ${removeEmail}`)
+      }
+
+      studentManagementSystem.displayStudents();
       // --------> WRITE YOUR CODE ABOVE
       break;
 
@@ -75,7 +94,12 @@ async function handleCommand(command) {
        */
       console.log('Displaying students...')
       // --------> WRITE YOUR CODE BELOW
-
+      if (studentManagementSystem.length === 0) {
+        console.log("No students found.");
+      } else {
+        const studentNames = studentManagementSystem.displayStudents();
+        console.log(`Students: ${studentNames}`);
+      }
       // --------> WRITE YOUR CODE ABOVE
       break;
 
@@ -91,7 +115,14 @@ async function handleCommand(command) {
        */
       console.log('Finding student...')
       // --------> WRITE YOUR CODE BELOW
-      
+      const [searchEmail] = args;
+      const foundStudent = studentManagementSystem.findStudent(searchEmail);
+
+      if (foundStudent !== -1) {
+        console.log("Student found:", foundStudent.getString());
+      } else {
+        console.log("Student does not exist.")
+      }
       // --------> WRITE YOUR CODE ABOVE
       break;
 
@@ -106,7 +137,12 @@ async function handleCommand(command) {
        */
       console.log('Saving data...')
       // --------> WRITE YOUR CODE BELOW
+      const [saveFileName] = args;
+      
+      studentManagementSystem.saveToJson(saveFileName);
 
+      console.log(`Student list saved to ${saveFileName}`);
+      break;
       // --------> WRITE YOUR CODE ABOVE
 
     case "load":
@@ -120,7 +156,17 @@ async function handleCommand(command) {
        */
       console.log('Loading data...')
       // --------> WRITE YOUR CODE BELOW
+      const [loadFileName] = args;
 
+      studentManagementSystem.loadFromJSON(loadFileName);
+
+      const updatedStudentList = studentManagementSystem.displayStudents();
+
+      if (updatedStudentList.length === 0) {
+        console.log("No students loaded.");
+      } else {
+        console.log("Updated student list:", updatedStudentList);
+      }
       // --------> WRITE YOUR CODE ABOVE
       break;
 
@@ -134,7 +180,12 @@ async function handleCommand(command) {
        */
       console.log('Clearing data...')
       // --------> WRITE YOUR CODE BELOW
-
+      // cannot call private methods like #clearstudents() from outside the class(index.js)
+      LinkedList.head = null;
+      LinkedList.tail = null;
+      LinkedList.length = 0;
+      
+      console.log("All students have been removed from the list.");
       // --------> WRITE YOUR CODE ABOVE
       break;
 
