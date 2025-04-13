@@ -181,11 +181,15 @@ async function handleCommand(command) {
       console.log('Clearing data...')
       // --------> WRITE YOUR CODE BELOW
       // cannot call private methods like #clearstudents() from outside the class(index.js)
-      LinkedList.head = null;
-      LinkedList.tail = null;
-      LinkedList.length = 0;
-      
+      let current = studentManagementSystem.head;
+      while (current) {
+        const email = current.data.getEmail();
+        studentManagementSystem.removeStudent(email);
+        current = current.next;
+      }
+
       console.log("All students have been removed from the list.");
+      console.log("List after clearing:", studentManagementSystem);
       // --------> WRITE YOUR CODE ABOVE
       break;
 

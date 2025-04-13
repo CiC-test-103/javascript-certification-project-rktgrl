@@ -77,7 +77,7 @@ class LinkedList {
     this.head = this.head.next;
     if (!this.head) this.tail = null;
     this.length--;
-    return;
+    return true;
    }
 
    let current = this.head;
@@ -152,7 +152,7 @@ return false;
     }
     students.sort((a, b) => a.getName().localeCompare(b.getName()));
     return students;
-  }
+  } 
 
   /**
    * REQUIRES:  specialization (String)
